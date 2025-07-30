@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: text2video-worker
+  namespace: text2video
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: text2video-worker }
+  template:
+    metadata:
+      labels: { app: text2video-worker }
+    spec:
+      containers:
+        - name: worker
+          image: <your-registry>/text2video-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["celery", "-A", "app.worker.celery_app", "worker", "--loglevel=INFO", "--concurrency=1"]
+          env:
+            - name: REDIS_URL
+              value: redis://redis.text2video.svc.cluster.local:6379/0
+            - name: ARTIFACT_DIR
+              value: /videos
+          volumeMounts:
+            - mountPath: /videos
+              name: videos
+          resources:
+            limits:
+              nvidia.com/gpu: 2
+      volumes:
+        - name: videos
+          persistentVolumeClaim:
+            claimName: videos-pvc

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: text2video-api
+  namespace: text2video
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: text2video-api }
+  template:
+    metadata:
+      labels: { app: text2video-api }
+    spec:
+      containers:
+        - name: api
+          image: zhengyuancui/text2video-backend:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_URL
+              value: redis://redis.text2video.svc.cluster.local:6379/0
+            - name: ARTIFACT_DIR
+              value: /videos
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - mountPath: /videos
+              name: videos
+          resources:
+            limits:
+              nvidia.com/gpu: 2
+      volumes:
+        - name: videos
+          persistentVolumeClaim:
+            claimName: videos-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: text2video-api
+  namespace: text2video
+spec:
+  selector:
+    app: text2video-api
+  ports:
+    - port: 80
+      targetPort: 8000

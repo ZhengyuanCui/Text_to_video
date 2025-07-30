@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+celery[redis]
+redis
+torch
+transformers
+huggingface_hub
+accelerate
+pillow
+ffmpeg-python

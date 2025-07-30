@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+celery[redis]
+redis
+pydantic
+torch==2.4.1  # match with CUDA 12.1 wheel index in your Dev Container
+transformers
+huggingface_hub
+accelerate
+pillow
+ffmpeg-python
+git+https://github.com/huggingface/diffusers.git

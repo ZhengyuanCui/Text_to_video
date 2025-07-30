@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: text2video
+  namespace: text2video
+spec:
+  rules:
+    - host: text2video.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: text2video-api
+                port:
+                  number: 80

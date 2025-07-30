@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ARTIFACT_DIR=/videos
+
+  worker:
+    build: ./backend
+    command: celery -A app.worker.celery_app worker --loglevel=INFO --concurrency=1
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ARTIFACT_DIR=/videos
+
+  redis:
+    image: redis:7
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
